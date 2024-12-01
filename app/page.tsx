@@ -1,13 +1,14 @@
 import TopNavBar from "./components/TopNavBar";
 import Tip from "./components/Tip";
 import CreatorsDisplay from "./components/CreatorsDisplay";
-import Dashboard from "./components/Dashboard";
+import ClaimPage from "./claim/page";
+
 
 export default function Home() {
   return (
     <div className="">
       <TopNavBar/>
-      <Dashboard/>
+      <ClaimPage/>
       <div className="flex mt-20 justify-between mx-40">
       <Tip/>
       <CreatorsDisplay/>
