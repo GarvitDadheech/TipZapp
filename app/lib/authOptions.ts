@@ -10,32 +10,20 @@ declare module "next-auth" {
 export const authOptions: NextAuthOptions = {
     providers: [
         Google({
-            clientId: process.env.GOOGLE_CLIENT_ID || "",
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
-            authorization: {
-                params: {
-                    scope: "openid profile email https://www.googleapis.com/auth/youtube.readonly",
-                },
-            },
+            clientId: process.env.GOOGLE_CLIENT_ID || '',
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
         }),
     ],
-    secret: process.env.SECRET,
-    pages: {
-        signIn: "/auth/signin",
+  callbacks: {
+    async jwt({ token, account }) {
+      if (account) {
+        token.accessToken = account.access_token;
+      }
+      return token;
     },
-    debug: true,
-    callbacks: {
-        async jwt({ token, account }) {
-            if (account?.access_token) {
-                token.accessToken = account.access_token;
-            }
-            return token;
-        },
-        async session({ session, token }) {
-            if (token?.accessToken) {
-                session.accessToken = token.accessToken as string;
-            }
-            return session;
-        },
+    async session({ session, token }) {
+      session.accessToken = token.accessToken as string;
+      return session;
     },
-};
+  },
+}
