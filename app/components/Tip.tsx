@@ -200,7 +200,7 @@ const Tip: React.FC = () => {
 
 
   return (
-    <div className="flex flex-col mt-16 w-[800px]">
+    <div className="flex flex-col  w-[800px]">
       {/* Heading Section */}
       <h1 className="text-7xl font-semibold text-left">
         {['Seek partners', 'for influncer', 'collaboration'].map((line, index) => (

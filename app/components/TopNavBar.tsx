@@ -1,17 +1,24 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation"; // Next.js router for navigation
 import { useWallet } from "../context/WalletProvider"; // Adjust the path as needed
-
+import { usePathname } from "next/navigation";
 const TopNavBar: React.FC = () => {
   const router = useRouter(); // Initialize router
   const { walletAddress, connectWallet } = useWallet();
   const [active, setActive] = useState<string>("Tip"); // Default to "Tip"
-
+  const pathname = usePathname(); // Get the current route
   const handleNavigation = (route: string, item: string) => {
     setActive(item); // Set the clicked item as active
     router.push(route); // Redirect to the specified route
   };
+  useEffect(() => {
+    if (pathname === "/") {
+      setActive("Tip"); // If at the home route, set "Tip" as active
+    } else if (pathname === "/claim") {
+      setActive("Claim"); // If at /claim, set "Claim" as active
+    }
+  }, [pathname]);
 
   return (
     <nav className="bg-white py-4 px-6 flex">
@@ -29,9 +36,7 @@ const TopNavBar: React.FC = () => {
               className="cursor-pointer font-medium text-black relative"
               onClick={() =>
                 handleNavigation(item === "Tip" ? "/" : `/${item.toLowerCase()}`, item)
-              }        
-              onMouseEnter={() => setActive(item)}
-              onMouseLeave={() => setActive((prev) => (prev === item ? item : ""))}
+              }
             >
               <span
                 className={`${
@@ -49,9 +54,9 @@ const TopNavBar: React.FC = () => {
               />
             </div>
           ))}
+        </div>
 
           {/* Connect Wallet Button */}
-        </div>
         <button
           onClick={connectWallet}
           className="px-4 py-2 rounded-lg font-medium bg-gradient-to-r from-[#4f90aa] to-[#ff5d78] text-white hover:opacity-90 transition-all mr-8"
