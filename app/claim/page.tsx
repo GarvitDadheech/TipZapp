@@ -129,7 +129,7 @@ export default function Claim() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center ">
       <div className="bg-white p-8 rounded-lg shadow-md w-96">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Claim Rewards</h1>

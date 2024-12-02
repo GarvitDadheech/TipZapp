@@ -4,6 +4,7 @@ import { SessionProvider } from 'next-auth/react';
 import { Providers } from "./providers";
 import "./globals.css";
 import { WalletProvider } from "./context/WalletProvider"; 
+import TopNavBar from "./components/TopNavBar";
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -32,6 +33,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <WalletProvider>
+        <TopNavBar/>
         {children}
       </WalletProvider>
       </body>

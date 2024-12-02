@@ -7,8 +7,7 @@ import ClaimPage from "./claim/page";
 export default function Home() {
   return (
     <div className="">
-      <TopNavBar/>
-      <div className="flex mt-20 justify-between mx-40">
+      <div className="flex justify-between mx-32 items-center">
       <Tip/>
       <CreatorsDisplay/>
       </div>

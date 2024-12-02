@@ -6,9 +6,10 @@ import { useWallet } from "../context/WalletProvider"; // Adjust the path as nee
 const TopNavBar: React.FC = () => {
   const router = useRouter(); // Initialize router
   const { walletAddress, connectWallet } = useWallet();
-  const [active, setActive] = useState<string | null>(null);
+  const [active, setActive] = useState<string>("Tip"); // Default to "Tip"
 
-  const handleNavigation = (route: string) => {
+  const handleNavigation = (route: string, item: string) => {
+    setActive(item); // Set the clicked item as active
     router.push(route); // Redirect to the specified route
   };
 
@@ -26,9 +27,11 @@ const TopNavBar: React.FC = () => {
             <div
               key={item}
               className="cursor-pointer font-medium text-black relative"
-              onClick={() => handleNavigation(`/${item.toLowerCase()}`)}
+              onClick={() =>
+                handleNavigation(item === "Tip" ? "/" : `/${item.toLowerCase()}`, item)
+              }        
               onMouseEnter={() => setActive(item)}
-              onMouseLeave={() => setActive(null)}
+              onMouseLeave={() => setActive((prev) => (prev === item ? item : ""))}
             >
               <span
                 className={`${
