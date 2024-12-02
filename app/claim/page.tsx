@@ -28,12 +28,53 @@ const CONTRACT_ADDRESS = "0x489642Fc16b0dC26be3CEC03b4F569ADBE067318";
 export default function Claim() {
   const { data: session } = useSession();
   const router = useRouter();
+
+  // Base Sepolia Chain ID and Network Details
+  const BASE_SEPOLIA_CHAIN_ID = 84532;
+  const BASE_SEPOLIA_RPC_URL = "https://sepolia.base.org";
   
   // State variables
   const [youtubeChannelId, setYoutubeChannelId] = useState<string | null>(null);
   const [availableTips, setAvailableTips] = useState<string>("0");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Switch to Base Sepolia Network
+  const switchToBaseSepolia = async () => {
+    if (!window.ethereum) {
+      throw new Error("MetaMask is not installed");
+    }
+    try {
+      await window.ethereum.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: `0x${BASE_SEPOLIA_CHAIN_ID.toString(16)}` }],
+      });
+    } catch (error: any) {
+      // If the chain is not added, add it
+      if (error.code === 4902) {
+        try {
+          await window.ethereum.request({
+            method: "wallet_addEthereumChain",
+            params: [{
+              chainId: `0x${BASE_SEPOLIA_CHAIN_ID.toString(16)}`,
+              chainName: "Base Sepolia Testnet",
+              rpcUrls: [BASE_SEPOLIA_RPC_URL],
+              nativeCurrency: {
+                name: "ETH",
+                symbol: "ETH",
+                decimals: 18
+              },
+              blockExplorerUrls: ["https://sepolia.basescan.org/"]
+            }]
+          });
+        } catch (addError) {
+          throw new Error("Failed to add Base Sepolia network");
+        }
+      } else {
+        throw error;
+      }
+    }
+  };
 
 
   // Fetch YouTube Channel ID
@@ -88,6 +129,7 @@ export default function Claim() {
     setError(null);
 
     try {
+      switchToBaseSepolia();
       const provider = new ethers.BrowserProvider(window.ethereum);
       const user = await provider.getSigner();
       const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY || '', provider);
