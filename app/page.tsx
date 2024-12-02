@@ -8,7 +8,6 @@ export default function Home() {
   return (
     <div className="">
       <TopNavBar/>
-      <ClaimPage/>
       <div className="flex mt-20 justify-between mx-40">
       <Tip/>
       <CreatorsDisplay/>

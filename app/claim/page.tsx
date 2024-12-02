@@ -7,9 +7,22 @@ import { Web3Provider } from "@ethersproject/providers";
 
 // Smart Contract ABI (you'll need to replace this with your actual ABI)
 const CONTRACT_ABI = [
-  "function ammountOfTip(string memory username) public view returns (uint256)",
-  "function withdraw(string memory username, string memory Key) public"
+  "function ammountOfTip(string memory username) public view returns (uint256)"
 ];
+
+const Claim_Contract_ABI = [
+  {
+    "inputs": [
+      { "internalType": "string", "name": "username", "type": "string" },
+      { "internalType": "address", "name": "reciver", "type": "address" }
+    ],
+    "name": "withdraw",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+];
+
 const CONTRACT_ADDRESS = "0x489642Fc16b0dC26be3CEC03b4F569ADBE067318"; 
 
 export default function Claim() {
@@ -22,9 +35,11 @@ export default function Claim() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+
   // Fetch YouTube Channel ID
   useEffect(() => {
     async function fetchYouTubeChannelId() {
+      console.log("Fetching YouTube channel ID");
       if (session?.accessToken) {
         try {
           const response = await fetch(
@@ -42,11 +57,13 @@ export default function Claim() {
     }
 
     fetchYouTubeChannelId();
+    //console.log()
   }, [session]);
 
   // Check available tips
   useEffect(() => {
     async function checkAvailableTips() {
+      console.log("Checking available tips for channel ID:", youtubeChannelId);
       if (youtubeChannelId) {
         try {
           const provider = new ethers.BrowserProvider(window.ethereum);
@@ -72,17 +89,22 @@ export default function Claim() {
 
     try {
       const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
-      const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+      const user = await provider.getSigner();
+      const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY || '', provider);
+      const walltAdd = await signer.getAddress();
+      console.log(walltAdd);
+      const contract = new ethers.Contract(CONTRACT_ADDRESS, Claim_Contract_ABI, signer);
 
       // Hardcoded key for demonstration - replace with secure method
-      const tx = await contract.withdraw(youtubeChannelId, "Hash");
+      const userAddress = await user.getAddress();
+      const tx = await contract.withdraw(youtubeChannelId, userAddress);
       await tx.wait();
 
       // Reset tips after successful withdrawal
       setAvailableTips("0");
       alert("Funds successfully claimed!");
     } catch (err) {
+      console.error("Failed to claim funds:", err);
       setError("Failed to claim funds");
     } finally {
       setIsLoading(false);
@@ -120,11 +142,6 @@ export default function Claim() {
         </div>
 
         <div className="text-center mb-6">
-          <img 
-            src={session.user?.image || ''} 
-            alt="Profile" 
-            className="w-20 h-20 rounded-full mx-auto mb-4"
-          />
           <p className="font-semibold">{session.user?.name}</p>
           <p className="text-gray-500">{youtubeChannelId}</p>
         </div>

@@ -12,8 +12,14 @@ export const authOptions: NextAuthOptions = {
         Google({
             clientId: process.env.GOOGLE_CLIENT_ID || '',
             clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+            authorization: {
+              params: {
+                  scope: "openid profile email https://www.googleapis.com/auth/youtube.readonly",
+              },
+          },
         }),
     ],
+    
   callbacks: {
     async jwt({ token, account }) {
       if (account) {
